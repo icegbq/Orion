@@ -8,13 +8,18 @@ public class Player : MonoBehaviour
     private float lastSynchronizationTime = 0f;
     private float syncDelay = 0f;
     private float syncTime = 0f;
+
+	private const float rotateSpeed = 1.9f;
+
     private Vector3 syncStartPosition = Vector3.zero;
     private Vector3 syncEndPosition = Vector3.zero;
-
+	private Quaternion syncRotation = Quaternion.identity;
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
         Vector3 syncPosition = Vector3.zero;
         Vector3 syncVelocity = Vector3.zero;
+		Quaternion syncRot = Quaternion.identity;
+
         if (stream.isWriting)
         {
             syncPosition = rigidbody.position;
@@ -22,11 +27,15 @@ public class Player : MonoBehaviour
 
             syncPosition = rigidbody.velocity;
             stream.Serialize(ref syncVelocity);
+
+			syncRot = rigidbody.rotation;
+			stream.Serialize(ref syncRot);
         }
         else
         {
             stream.Serialize(ref syncPosition);
             stream.Serialize(ref syncVelocity);
+			stream.Serialize(ref syncRot);
 
             syncTime = 0f;
             syncDelay = Time.time - lastSynchronizationTime;
@@ -34,6 +43,7 @@ public class Player : MonoBehaviour
 
             syncEndPosition = syncPosition + syncVelocity * syncDelay;
             syncStartPosition = rigidbody.position;
+			syncRotation = syncRot;
         }
     }
 
@@ -45,40 +55,47 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (networkView.isMine)
-        {
+		{
+			InputRotation();
             InputMovement();
-            InputColorChange();
+            InputColorChange();  
         }
         else
         {
             SyncedMovement();
         }
     }
-
-
+ 
     private void InputMovement()
     {
+		Vector3 forward = rigidbody.rotation * Vector3.forward;
+		Vector3 right = rigidbody.rotation * Vector3.right;
         if (Input.GetKey(KeyCode.W))
-            rigidbody.MovePosition(rigidbody.position + Vector3.forward * speed * Time.deltaTime);
+			rigidbody.MovePosition(rigidbody.position + forward * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.S))
-            rigidbody.MovePosition(rigidbody.position - Vector3.forward * speed * Time.deltaTime);
+			rigidbody.MovePosition(rigidbody.position - forward * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.D))
-            rigidbody.MovePosition(rigidbody.position + Vector3.right * speed * Time.deltaTime);
+			rigidbody.MovePosition(rigidbody.position + right * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.A))
-            rigidbody.MovePosition(rigidbody.position - Vector3.right * speed * Time.deltaTime);
+			rigidbody.MovePosition(rigidbody.position - right * speed * Time.deltaTime);
     }
+
+	private void InputRotation()
+	{
+		transform.RotateAround(rigidbody.position, Vector3.up, Input.GetAxis("Mouse X")*rotateSpeed);
+	}
 
     private void SyncedMovement()
     {
         syncTime += Time.deltaTime;
 
         rigidbody.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
+		rigidbody.rotation = syncRotation;
     }
-
-
+  
     private void InputColorChange()
     {
         if (Input.GetKeyDown(KeyCode.R))
