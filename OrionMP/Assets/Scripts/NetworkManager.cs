@@ -3,8 +3,8 @@ using System.Collections;
 
 public class NetworkManager : MonoBehaviour
 {
-    private const string typeName = "UniqueGameName";
-    private const string gameName = "RoomName";
+    private const string typeName = "OrionDev";
+    private const string gameName = "DevTest";
 
     private bool isRefreshingHostList = false;
     private HostData[] hostList;
@@ -34,7 +34,7 @@ public class NetworkManager : MonoBehaviour
 
     private void StartServer()
     {
-        Network.InitializeServer(5, 25000, !Network.HavePublicAddress());
+        Network.InitializeServer(5, 25000, true);
         MasterServer.RegisterHost(typeName, gameName);
     }
 
