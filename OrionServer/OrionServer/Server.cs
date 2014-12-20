@@ -11,23 +11,25 @@ namespace OrionServer
 {
     class Server
     {
-        private TcpListener tcpListener;
-        private Thread listenThread;
+        private TcpListener _tcpListener;
+        private Thread _listenThread;
+
+        public List<GameClient> _clients;
 
         public Server()
         {
-            this.tcpListener = new TcpListener(IPAddress.Any, 3000);
-            this.listenThread = new Thread(new ThreadStart(ListenForClients));
-            this.listenThread.Start();
+            this._tcpListener = new TcpListener(IPAddress.Any, 3000);
+            this._listenThread = new Thread(new ThreadStart(ListenForClients));
+            this._listenThread.Start();
         }
 
         private void ListenForClients()
         {
-            this.tcpListener.Start();
+            this._tcpListener.Start();
 
             while (true)
             { 
-                TcpClient client = this.tcpListener.AcceptTcpClient(); 
+                TcpClient client = this._tcpListener.AcceptTcpClient(); 
                 Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
                 clientThread.Start(client);
             }
