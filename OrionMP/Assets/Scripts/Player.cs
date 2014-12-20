@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
         else
         {
             SyncedMovement();
-			//gameObject.SetActive(false);
+			camera.enabled = false;
         }
     }
  
