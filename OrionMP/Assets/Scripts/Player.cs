@@ -58,42 +58,43 @@ public class Player : MonoBehaviour
 		{
 			InputRotation();
             InputMovement();
-            InputColorChange();  
+            InputColorChange();
         }
         else
         {
             SyncedMovement();
+			gameObject.SetActive(false);
         }
     }
  
     private void InputMovement()
     {
-		Vector3 forward = rigidbody.rotation * Vector3.forward;
-		Vector3 right = rigidbody.rotation * Vector3.right;
+		Vector3 forward = transform.rotation * Vector3.forward;
+		Vector3 right = transform.rotation * Vector3.right;
         if (Input.GetKey(KeyCode.W))
-			rigidbody.MovePosition(rigidbody.position + forward * speed * Time.deltaTime);
+			transform.Translate(forward * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.S))
-			rigidbody.MovePosition(rigidbody.position - forward * speed * Time.deltaTime);
+			transform.Translate(-1 * forward * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.D))
-			rigidbody.MovePosition(rigidbody.position + right * speed * Time.deltaTime);
+			transform.Translate(right * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.A))
-			rigidbody.MovePosition(rigidbody.position - right * speed * Time.deltaTime);
+			transform.Translate(-1 * right * speed * Time.deltaTime);
     }
 
 	private void InputRotation()
 	{
-		transform.RotateAround(rigidbody.position, Vector3.up, Input.GetAxis("Mouse X")*rotateSpeed);
+		transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Mouse X")*rotateSpeed);
 	}
 
     private void SyncedMovement()
     {
         syncTime += Time.deltaTime;
 
-        rigidbody.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
-		rigidbody.rotation = syncRotation;
+        transform.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
+		transform.rotation = syncRotation;
     }
   
     private void InputColorChange()
