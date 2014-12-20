@@ -27,6 +27,11 @@ public class Player : MonoBehaviour
 	public float maximumY = 60F;
 	
 	float rotationY = 0F;
+
+	public Player()
+	{
+		 
+	}
 	
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
@@ -96,6 +101,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
 			transform.position = transform.position + (-1 * right * speed * Time.deltaTime);
+ 
     }
 
 	private void InputRotation()
