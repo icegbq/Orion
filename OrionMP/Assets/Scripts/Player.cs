@@ -14,7 +14,21 @@ public class Player : MonoBehaviour
     private Vector3 syncStartPosition = Vector3.zero;
     private Vector3 syncEndPosition = Vector3.zero;
 	private Quaternion syncRotation = Quaternion.identity;
-    void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
+
+	public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
+	public RotationAxes axes = RotationAxes.MouseXAndY;
+	public float sensitivityX = 15F;
+	public float sensitivityY = 15F;
+	
+	public float minimumX = -360F;
+	public float maximumX = 360F;
+	
+	public float minimumY = -60F;
+	public float maximumY = 60F;
+	
+	float rotationY = 0F;
+	
+	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
         Vector3 syncPosition = Vector3.zero;
         Vector3 syncVelocity = Vector3.zero;
@@ -72,24 +86,43 @@ public class Player : MonoBehaviour
 		Vector3 forward = transform.rotation * Vector3.forward;
 		Vector3 right = transform.rotation * Vector3.right;
         if (Input.GetKey(KeyCode.W))
-			transform.Translate(forward * speed * Time.deltaTime);
+			transform.position = transform.position + (forward * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.S))
-			transform.Translate(-1 * forward * speed * Time.deltaTime);
+			transform.position = transform.position + (-1 * forward * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.D))
-			transform.Translate(right * speed * Time.deltaTime);
+			transform.position = transform.position + (right * speed * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.A))
-			transform.Translate(-1 * right * speed * Time.deltaTime);
+			transform.position = transform.position + (-1 * right * speed * Time.deltaTime);
     }
 
 	private void InputRotation()
 	{
-		transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Mouse X")*rotateSpeed);
+		if (axes == RotationAxes.MouseXAndY)
+		{
+			float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
+			
+			rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+			rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);
+			
+			transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
+		}
+		else if (axes == RotationAxes.MouseX)
+		{
+			transform.Rotate(0, Input.GetAxis("Mouse X") * sensitivityX, 0);
+		}
+		else
+		{
+			rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+			rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);
+			
+			transform.localEulerAngles = new Vector3(-rotationY, transform.localEulerAngles.y, 0);
+		}
 	}
-
-    private void SyncedMovement()
+	
+	private void SyncedMovement()
     {
         syncTime += Time.deltaTime;
 
