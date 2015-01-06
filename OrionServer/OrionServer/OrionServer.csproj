@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -41,15 +42,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameClient.cs" />
-    <Compile Include="PacketHandler.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="ServerBase\Abstract\AbstractPacketLib.cs" />
+    <Compile Include="ServerBase\BaseAttributes\ServerStartedEventAttribute.cs" />
+    <Compile Include="ServerBase\BasePacketIn.cs" />
+    <Compile Include="ServerBase\BasePacketOut.cs" />
+    <Compile Include="ServerBase\Constants.cs" />
+    <Compile Include="ServerBase\Abstract\IPacketHandler.cs" />
+    <Compile Include="ServerBase\Marshal.cs" />
+    <Compile Include="ServerBase\BaseAttributes\PacketHandlerAttribute.cs" />
+    <Compile Include="ServerBase\PacketProcessor.cs" />
+    <Compile Include="ServerBase\Util\FVector.cs" />
+    <Compile Include="ServerBase\Util\Indexer.cs" />
+    <Compile Include="Server\GameObjects\GameObject.cs" />
+    <Compile Include="Server\GameObjects\GamePlayer.cs" />
+    <Compile Include="Server\GameServer.cs" />
+    <Compile Include="Server\Packets\Client\Hello.cs" />
+    <Compile Include="Server\Packets\Client\PlayerRotationUpdate.cs" />
+    <Compile Include="Server\Packets\Client\PlayerPositionUpdate.cs" />
+    <Compile Include="Server\Packets\PacketLib.cs" />
+    <Compile Include="Server\GameClient.cs" />
+    <Compile Include="ServerBase\BaseClient.cs" />
+    <Compile Include="ServerBase\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server.cs" />
+    <Compile Include="ServerBase\BaseServer.cs" />
+    <Compile Include="Server\Packets\Server\PacketOut.cs" />
+    <Compile Include="Server\WorldMgr.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,6 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\OrionGame\MultiFPS - ep 24\Assets\PlayerStuff\Scripts\PlayerController.cs">
+    <Files>
+      <File FileName="..\OrionGame\MultiFPS - ep 24\Assets\Health.cs" Line="1" Column="1" />
+      <File FileName="..\OrionGame\MultiFPS - ep 24\Assets\NetworkManager.cs" Line="197" Column="1" />
+      <File FileName="..\OrionGame\MultiFPS - ep 24\Assets\PlayerStuff\Scripts\NetworkCharacter.cs" Line="56" Column="20" />
+      <File FileName="..\OrionGame\MultiFPS - ep 24\Assets\_IMPORTED\Photon Unity Networking\Plugins\PhotonNetwork\PhotonNetwork.cs" Line="1020" Column="36" />
+      <File FileName="..\OrionGame\MultiFPS - ep 24\Assets\_IMPORTED\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs" Line="28" Column="18" />
+      <File FileName="..\OrionGame\MultiFPS - ep 24\Assets\PlayerStuff\Scripts\PlayerController.cs" Line="26" Column="53" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

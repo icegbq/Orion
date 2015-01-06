@@ -6,29 +6,22 @@ public class NetworkManager : MonoBehaviour {
 	// TEMPORARY TESTING STUFF
 	public string botResourceName;
 	public Waypoint botSpawnWaypoint;
+
+	public AbstractGameType _gameType = new AbstractGameType ();
+
 	// END OF TESTING
 
 
 	public GameObject standbyCamera;
 	SpawnSpot[] spawnSpots;
 
-	public bool offlineMode = false;
-
 	bool connecting = false;
 
-	List<string> chatMessages;
-	int maxChatMessages = 5;
-
-	public float respawnTimer = 0;
-
-	bool hasPickedTeam = false;
-	int teamID=0;
 
 	// Use this for initialization
 	void Start () {
 		spawnSpots = GameObject.FindObjectsOfType<SpawnSpot>();
 		PhotonNetwork.player.name = PlayerPrefs.GetString("Username", "Awesome Dude");
-		chatMessages = new List<string>();
 	}
 
 	void OnDestroy() {
@@ -40,11 +33,12 @@ public class NetworkManager : MonoBehaviour {
 	}
 
 	[RPC]
-	void AddChatMessage_RPC(string m) {
-		while(chatMessages.Count >= maxChatMessages) {
-			chatMessages.RemoveAt(0);
+	void AddPlayerToWorld(PlayerController pc)
+	{
+		if (PhotonNetwork.isMasterClient) 
+		{
+
 		}
-		chatMessages.Add(m);
 	}
 
 	void Connect() {
@@ -67,16 +61,8 @@ public class NetworkManager : MonoBehaviour {
 			PhotonNetwork.player.name = GUILayout.TextField(PhotonNetwork.player.name);
 			GUILayout.EndHorizontal();
 
-			if( GUILayout.Button("Single Player") ) {
-				connecting = true;
-				PhotonNetwork.offlineMode = true;
-				OnJoinedLobby();
-			}
-
-			if( GUILayout.Button("Multi Player") ) {
-				connecting = true;
-				Connect ();
-			}
+			connecting = true;
+			Connect ();
 
 			GUILayout.FlexibleSpace();
 			GUILayout.EndVertical();
@@ -87,53 +73,33 @@ public class NetworkManager : MonoBehaviour {
 
 		if(PhotonNetwork.connected == true && connecting == false) {
 
-			if(hasPickedTeam) {
-				// We are fully connected, make sure to display the chat box.
-				GUILayout.BeginArea( new Rect(0, 0, Screen.width, Screen.height) );
-				GUILayout.BeginVertical();
-				GUILayout.FlexibleSpace();
-
-				foreach(string msg in chatMessages) {
-					GUILayout.Label(msg);
-				}
-
-				GUILayout.EndVertical();
-				GUILayout.EndArea();
+			GUILayout.BeginArea( new Rect(0, 0, Screen.width, Screen.height) );
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+			GUILayout.BeginVertical();
+			GUILayout.FlexibleSpace();
+			
+			if( GUILayout.Button("Red Team") ) {
+				SpawnMyPlayer(1);
 			}
-			else {
-				// Player has not yet selected a team.
-
-				GUILayout.BeginArea( new Rect(0, 0, Screen.width, Screen.height) );
-				GUILayout.BeginHorizontal();
-				GUILayout.FlexibleSpace();
-				GUILayout.BeginVertical();
-				GUILayout.FlexibleSpace();
-				
-				if( GUILayout.Button("Red Team") ) {
-					SpawnMyPlayer(1);
-				}
-				
-				if( GUILayout.Button("Green Team") ) {
-					SpawnMyPlayer(2);
-				}
-
-				if( GUILayout.Button("Random") ) {
-					SpawnMyPlayer(Random.Range(1,3));	// 1 or 2
-				}
-				
-				if( GUILayout.Button("Renegade!") ) {
-					SpawnMyPlayer(0);
-				}
-				
-				GUILayout.FlexibleSpace();
-				GUILayout.EndVertical();
-				GUILayout.FlexibleSpace();
-				GUILayout.EndHorizontal();
-				GUILayout.EndArea();
-
-
+			
+			if( GUILayout.Button("Green Team") ) {
+				SpawnMyPlayer(2);
 			}
 
+			if( GUILayout.Button("Random") ) {
+				SpawnMyPlayer(Random.Range(1,3));	// 1 or 2
+			}
+			
+			if( GUILayout.Button("Renegade!") ) {
+				SpawnMyPlayer(0);
+			}
+			
+			GUILayout.FlexibleSpace();
+			GUILayout.EndVertical();
+			GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
+			GUILayout.EndArea();
 		}
 
 	}
@@ -173,9 +139,12 @@ public class NetworkManager : MonoBehaviour {
 		((MonoBehaviour)myPlayerGO.GetComponent("MouseLook")).enabled = true;
 		((MonoBehaviour)myPlayerGO.GetComponent("PlayerController")).enabled = true;
 
-		myPlayerGO.GetComponent<PhotonView>().RPC ("SetTeamID", PhotonTargets.AllBuffered, teamID);
+		//myPlayerGO.GetComponent<PhotonView>().RPC ("SetTeamID", PhotonTargets.AllBuffered, teamID);
 
 		myPlayerGO.transform.FindChild("Main Camera").gameObject.SetActive(true);
+
+		GetComponent<PhotonView>().RPC ("AddPlayerToWorld", PhotonTargets.AllBuffered, myPlayerGO);
+
 
 		// BOT TESTING
 		//GameObject botGO = (GameObject)PhotonNetwork.Instantiate(botResourceName, botSpawnWaypoint.transform.position, botSpawnWaypoint.transform.rotation, 0);
